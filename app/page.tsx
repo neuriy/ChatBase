@@ -141,7 +141,7 @@ function ChatApp() {
       isDeepThink?: boolean;
       attachmentName?: string;
     }
-  ) => {
+  ): Promise<string | null> => {
     const userMsg: Message = {
       id: "u-" + Date.now(),
       sender: "user",
@@ -192,7 +192,7 @@ function ChatApp() {
         setChatError("Sessie verlopen. Log opnieuw in.");
         setIsGenerating(false);
         setToolPhase(false);
-        return;
+        return null;
       }
 
       const data = await res.json();
@@ -200,18 +200,20 @@ function ChatApp() {
         setChatError(data.error || "Er ging iets mis.");
         setIsGenerating(false);
         setToolPhase(false);
-        return;
+        return null;
       }
 
       setToolPhase(false);
+      const reply = String(data.reply || "");
       setMessages((prev) => [
         ...prev,
         {
           id: data.id || "a-" + Date.now(),
           sender: "assistant",
-          content: data.reply,
+          content: reply,
         },
       ]);
+      return reply;
     } catch (err) {
       if ((err as Error).name === "AbortError") {
         setChatError("Verzoek geannuleerd.");
@@ -220,6 +222,7 @@ function ChatApp() {
           "AI tijdelijk niet beschikbaar. Probeer het zo opnieuw — de chat blijft werken."
         );
       }
+      return null;
     } finally {
       setIsGenerating(false);
       setToolPhase(false);

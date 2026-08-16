@@ -36,40 +36,47 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
+  const baseTextRef = useRef("");
+  const finalVoiceRef = useRef("");
 
   // Initialize Web Speech Recognition
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const SpeechRecognition =
-        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = "en-US";
+    if (typeof window === "undefined") return;
 
-        recognition.onresult = (event: any) => {
-          let currentTranscript = "";
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            currentTranscript += event.results[i][0].transcript;
-          }
-          setText((prev) => {
-            const trimmed = prev.trim();
-            return trimmed ? `${trimmed} ${currentTranscript}` : currentTranscript;
-          });
-        };
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
 
-        recognition.onerror = () => {
-          setIsListening(false);
-        };
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
 
-        recognition.onend = () => {
-          setIsListening(false);
-        };
-
-        recognitionRef.current = recognition;
+    recognition.onresult = (event: any) => {
+      let interim = "";
+      let finals = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const piece = event.results[i][0].transcript;
+        if (event.results[i].isFinal) finals += piece;
+        else interim += piece;
       }
-    }
+      if (finals) {
+        finalVoiceRef.current = `${finalVoiceRef.current} ${finals}`.trim();
+      }
+      const spoken = `${finalVoiceRef.current} ${interim}`.trim();
+      const base = baseTextRef.current.trim();
+      setText(base ? `${base} ${spoken}`.trim() : spoken);
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
   }, []);
 
   const toggleVoiceControl = () => {
@@ -81,13 +88,16 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     if (isListening) {
       recognitionRef.current.stop();
       setIsListening(false);
-    } else {
-      try {
-        recognitionRef.current.start();
-        setIsListening(true);
-      } catch (err) {
-        setIsListening(false);
-      }
+      return;
+    }
+
+    baseTextRef.current = text;
+    finalVoiceRef.current = "";
+    try {
+      recognitionRef.current.start();
+      setIsListening(true);
+    } catch {
+      setIsListening(false);
     }
   };
 

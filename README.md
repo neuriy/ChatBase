@@ -16,6 +16,12 @@ Neuriy AI chat application (`chat.neuriy.com`) — powered by **ElloFive (Ello5)
 |-----------|--------------------|------------------------|
 | ![SVG](docs/demo/04-svg-image.png) | ![Marketplace](docs/demo/05-marketplace.png) | ![Settings](docs/demo/06-settings-marketplace.png) |
 
+| AI Face · Voice Mode | Voice reply synced to chat |
+|----------------------|----------------------------|
+| ![Voice AI Face](docs/demo/07-voice-ai-face.png) | ![Voice chat](docs/demo/08-voice-chat-synced.png) |
+
+Voice + AI Face: mic (Chrome/Safari), typed fallback, ElloFive replies spoken aloud (`npm run voice:smoke`).
+
 ## Neuriy AI + ElloFive
 
 ```text
@@ -75,6 +81,7 @@ node scripts/capture-demo.mjs   # writes docs/demo/*.png + neuriy-demo.webm/mp4
 | `npm run build` | Production build |
 | `npm test` | Vitest |
 | `npm run ui:smoke` | Playwright UI smoke |
+| `npm run voice:smoke` | AI Face + Voice Mode smoke |
 | `npm run lint` | ESLint |
 
 ## Feature flags
