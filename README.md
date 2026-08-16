@@ -30,7 +30,8 @@ Marketplace and Settings are **in-chat pages** (not popups), styled like [Neuriy
 
 Upload-ready file map: [`kickstarter/`](kickstarter/README.md) — pitch text, rewards, checklist, screenshots, and demo video (`02-video/neuriy-kickstarter-demo.mp4`).
 
-**GitHub Pages:** [neuriy.github.io/ChatBase](https://neuriy.github.io/ChatBase/) (static invest landing from `docs/`).
+**GitHub Pages:** [neuriy.github.io/ChatBase](https://neuriy.github.io/ChatBase/) (static invest landing from `docs/` / branch `gh-pages`).  
+One-time enable: [`docs/ENABLE_PAGES.md`](docs/ENABLE_PAGES.md) — Settings → Pages → Source `gh-pages` or GitHub Actions.
 
 ## Neuriy AI + ElloFive
 
