@@ -1,6 +1,8 @@
 # Neuriy Kickstarter — file map (upload pack)
 
-Upload this folder’s contents to Kickstarter (Campaign → Story / Video / Images).
+**Live GitHub Pages:** https://neuriy.github.io/ChatBase/
+
+Upload this folder’s contents to Kickstarter (Campaign → Story / Video / Images). The same media also ships on Pages under `docs/`.
 
 ```text
 kickstarter/
