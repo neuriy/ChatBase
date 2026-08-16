@@ -11,6 +11,9 @@ services/ello5-learn/.venv/bin/pip install -r services/ello5-learn/requirements.
 mkdir -p data/ello5-learn/inbox data/ello5-learn/runs
 touch data/ello5-learn/inbox/chat.jsonl
 
+# Build knowledge from committed seed so Ello5 improves immediately
+services/ello5-learn/.venv/bin/python services/ello5-learn/build_knowledge.py
+
 echo "Installed. Test one cycle:"
 echo "  services/ello5-learn/.venv/bin/python services/ello5-learn/worker.py --once"
 echo "Then enable systemd (as root):"

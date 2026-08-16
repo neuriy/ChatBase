@@ -61,3 +61,7 @@ data/ello5-learn/knowledge.jsonl
 data/ello5-learn/knowledge_meta.json
 data/ello5-learn/last_cycle.json
 services/ello5-learn/.venv/
+
+services/ello5-learn/__pycache__/
+**/__pycache__/
+*.pyc
