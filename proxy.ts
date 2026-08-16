@@ -20,7 +20,11 @@ export function proxy(request: NextRequest) {
   if (protectedApi) {
     const auth = request.headers.get("authorization");
     const session = request.cookies.get("neuriy_session")?.value;
-    if (!auth && !session) {
+    const bypass =
+      process.env.DEV_AUTH_BYPASS === "1" &&
+      process.env.NODE_ENV !== "production" &&
+      (auth?.startsWith("Bearer dev:") || session?.startsWith("dev:"));
+    if (!auth && !session && !bypass) {
       return NextResponse.json(
         { error: "Unauthorized", code: "auth_required" },
         {

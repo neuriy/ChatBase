@@ -13,40 +13,47 @@ import {
 import { ensureNeuriyAuth } from "@/lib/auth/client";
 import { NeuriyLogoMark } from "@/components/NeuriyLogo";
 
-ensureNeuriyAuth();
+const DEV_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "1";
 
-async function syncSessionCookie() {
-  // Firebase User.getIdToken is on the underlying SDK; @neuriy/auth maps users.
-  // Use firebase auth currentUser via dynamic import to refresh silently.
-  const { getAuth } = await import("firebase/auth");
-  const auth = getAuth();
-  const u = auth.currentUser;
-  if (!u) {
-    await fetch("/api/auth/session", { method: "DELETE" });
-    return null;
-  }
-  const idToken = await u.getIdToken(/* forceRefresh */ false);
-  const res = await fetch("/api/auth/session", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idToken }),
-  });
-  if (!res.ok) throw new Error("session_sync_failed");
-  return res.json();
+function enableDevSession() {
+  document.cookie = `neuriy_session=dev:local-tester; path=/; SameSite=Lax`;
+  document.cookie = `neuriy_csrf=dev-csrf-token; path=/; SameSite=Lax`;
 }
 
 export function AuthProviders({ children }: { children: React.ReactNode }) {
+  // Skip Firebase provider entirely in local test bypass mode
+  if (DEV_BYPASS) {
+    return <>{children}</>;
+  }
   ensureNeuriyAuth();
   return <NeuriyAuthProvider>{children}</NeuriyAuthProvider>;
 }
 
-export function AuthGate({ children }: { children: React.ReactNode }) {
+function FirebaseAuthGate({ children }: { children: React.ReactNode }) {
   const { user, loading } = useNeuriyAuth();
   const [sessionReady, setSessionReady] = useState(false);
   const [sessionError, setSessionError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    async function syncSessionCookie() {
+      const { getAuth } = await import("firebase/auth");
+      const auth = getAuth();
+      const u = auth.currentUser;
+      if (!u) {
+        await fetch("/api/auth/session", { method: "DELETE" });
+        return null;
+      }
+      const idToken = await u.getIdToken(false);
+      const res = await fetch("/api/auth/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      if (!res.ok) throw new Error("session_sync_failed");
+      return res.json();
+    }
+
     async function run() {
       if (loading) return;
       if (!user) {
@@ -70,8 +77,10 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     }
     run();
     const interval = setInterval(() => {
-      if (getCurrentUser()) syncSessionCookie().catch(() => undefined);
-    }, 45 * 60 * 1000); // silent refresh before typical 1h ID token expiry
+      if (getCurrentUser()) {
+        syncSessionCookie().catch(() => undefined);
+      }
+    }, 45 * 60 * 1000);
     return () => {
       cancelled = true;
       clearInterval(interval);
@@ -89,7 +98,18 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    return <LoginScreen />;
+    return (
+      <LoginScreen
+        onDevEnter={
+          process.env.NODE_ENV === "development"
+            ? () => {
+                enableDevSession();
+                window.location.reload();
+              }
+            : undefined
+        }
+      />
+    );
   }
 
   if (!sessionReady) {
@@ -105,7 +125,30 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function LoginScreen() {
+function DevBypassGate({ children }: { children: React.ReactNode }) {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    enableDevSession();
+    setReady(true);
+  }, []);
+  if (!ready) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#ededed] dark:bg-[#121214]">
+        <div className="text-sm text-neutral-500">Local test mode…</div>
+      </div>
+    );
+  }
+  return <>{children}</>;
+}
+
+export function AuthGate({ children }: { children: React.ReactNode }) {
+  if (DEV_BYPASS) {
+    return <DevBypassGate>{children}</DevBypassGate>;
+  }
+  return <FirebaseAuthGate>{children}</FirebaseAuthGate>;
+}
+
+function LoginScreen({ onDevEnter }: { onDevEnter?: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -194,6 +237,15 @@ function LoginScreen() {
           </button>
         </div>
 
+        {onDevEnter && (
+          <button
+            onClick={onDevEnter}
+            className="w-full py-2 rounded-xl text-xs font-semibold border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500"
+          >
+            Continue in local test mode
+          </button>
+        )}
+
         <p className="text-[11px] text-neutral-400 text-center">
           Aangedreven door IDHook · chat.neuriy.com
         </p>
@@ -203,6 +255,10 @@ function LoginScreen() {
 }
 
 export async function logoutNeuriy() {
-  await neuriySignOut();
-  await fetch("/api/auth/session", { method: "DELETE" });
+  if (!DEV_BYPASS) {
+    await neuriySignOut().catch(() => undefined);
+  }
+  document.cookie = "neuriy_session=; path=/; Max-Age=0";
+  document.cookie = "neuriy_csrf=; path=/; Max-Age=0";
+  await fetch("/api/auth/session", { method: "DELETE" }).catch(() => undefined);
 }

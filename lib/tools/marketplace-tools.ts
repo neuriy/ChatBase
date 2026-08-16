@@ -237,11 +237,47 @@ export function detectMarketplaceToolCalls(
   text: string
 ): Array<{ name: string; args: Record<string, unknown> }> {
   if (!shouldUseMarketplace(text)) return [];
-  const q = text
-    .replace(
-      /marketplace|neuriy\s+apps?|find\s+(an?\s+)?app|browse\s+apps|dataset|catalog/gi,
-      ""
-    )
-    .trim() || text.trim();
-  return [{ name: "marketplace.search", args: { query: q.slice(0, 200), limit: 5 } }];
+  const stop = new Set([
+    "please",
+    "can",
+    "you",
+    "could",
+    "find",
+    "search",
+    "show",
+    "browse",
+    "look",
+    "get",
+    "list",
+    "marketplace",
+    "neuriy",
+    "app",
+    "apps",
+    "dataset",
+    "catalog",
+    "for",
+    "me",
+    "a",
+    "an",
+    "the",
+    "some",
+    "any",
+    "with",
+    "that",
+    "this",
+    "help",
+    "helper",
+    "assistance",
+  ]);
+  const tokens = String(text)
+    .toLowerCase()
+    .replace(/[?!.,]/g, " ")
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter((t) => t.length > 2 && !stop.has(t));
+  // Marketplace SQL LIKE matches the whole query as a substring — prefer a strong keyword
+  const q = tokens[0] || "assistant";
+  return [
+    { name: "marketplace.search", args: { query: q.slice(0, 200), limit: 5 } },
+  ];
 }
