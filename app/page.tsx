@@ -1,14 +1,18 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Header } from "@/components/Header";
-import { Sidebar, ChatHistoryItem } from "@/components/Sidebar";
+import { useRouter } from "next/navigation";
 import { ChatMessage, Message } from "@/components/ChatMessage";
 import { SuggestionPills } from "@/components/SuggestionPills";
 import { ChatInput } from "@/components/ChatInput";
-import { SettingsModal, SettingsState } from "@/components/SettingsModal";
+import { ChatShell } from "@/components/ChatShell";
 import { AIFaceVoiceMode } from "@/components/AIFaceVoiceMode";
 import { AuthGate } from "@/components/AuthGate";
+import {
+  loadSettings,
+  type SettingsState,
+} from "@/components/SettingsPage";
+import { ChatHistoryItem } from "@/components/Sidebar";
 import { RefreshCw, Wrench } from "lucide-react";
 
 export default function Home() {
@@ -20,10 +24,8 @@ export default function Home() {
 }
 
 function ChatApp() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const router = useRouter();
   const [isFaceVoiceModeOpen, setIsFaceVoiceModeOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [toolPhase, setToolPhase] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
@@ -44,19 +46,29 @@ function ChatApp() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("neuriy_theme");
-    const isDark =
-      saved === "dark" ||
-      (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    setIsDarkMode(isDark);
-    setSettings((prev) => ({ ...prev, isDarkMode: isDark }));
-    if (isDark) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
+    setSettings(loadSettings());
+  }, []);
+
+  useEffect(() => {
+    const pending = sessionStorage.getItem("neuriy_pending_prompt");
+    if (pending) {
+      sessionStorage.removeItem("neuriy_pending_prompt");
+      void handleSendMessage(pending);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const onClear = () => {
+      setHistory([]);
+      setMessages([]);
+    };
+    window.addEventListener("neuriy:clear-history", onClear);
+    return () => window.removeEventListener("neuriy:clear-history", onClear);
   }, []);
 
   useEffect(() => {
     if (isFaceVoiceModeOpen) document.title = "Neuriy | Voice Assistant Mode";
-    else if (isSettingsOpen) document.title = "Neuriy | Settings";
     else if (toolPhase) document.title = "Neuriy | Marketplace tool…";
     else if (isGenerating) document.title = "Neuriy | Thinking...";
     else if (messages.length === 0) document.title = "Neuriy | What can I help with?";
@@ -66,33 +78,12 @@ function ChatApp() {
     }
   }, [
     isFaceVoiceModeOpen,
-    isSettingsOpen,
     isGenerating,
     toolPhase,
     messages,
     history,
     activeChatId,
   ]);
-
-  const handleToggleDarkMode = () => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      setSettings((s) => ({ ...s, isDarkMode: next }));
-      if (next) {
-        document.documentElement.classList.add("dark");
-        localStorage.setItem("neuriy_theme", "dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-        localStorage.setItem("neuriy_theme", "light");
-      }
-      return next;
-    });
-  };
-
-  const handleSaveSettings = (newSettings: SettingsState) => {
-    setSettings(newSettings);
-    if (newSettings.isDarkMode !== isDarkMode) handleToggleDarkMode();
-  };
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -114,11 +105,6 @@ function ChatApp() {
   const handleDeleteChat = (id: string) => {
     setHistory((prev) => prev.filter((item) => item.id !== id));
     if (activeChatId === id) handleNewChat();
-  };
-
-  const handleClearHistory = () => {
-    setHistory([]);
-    handleNewChat();
   };
 
   const getModelLabel = () => {
@@ -230,52 +216,31 @@ function ChatApp() {
   };
 
   const handleSelectSuggestion = (suggestionText: string) => {
-    handleSendMessage(suggestionText);
+    void handleSendMessage(suggestionText);
   };
 
   const handleRegenerate = () => {
     const lastUserMsg = [...messages].reverse().find((m) => m.sender === "user");
-    if (lastUserMsg) handleSendMessage(lastUserMsg.content);
+    if (lastUserMsg) void handleSendMessage(lastUserMsg.content);
   };
 
   const handleAbort = () => abortRef.current?.abort();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#ededed] dark:bg-[#121214] text-neutral-900 dark:text-neutral-100 transition-colors duration-200">
+    <ChatShell
+      history={history}
+      activeChatId={activeChatId}
+      onSelectChat={handleSelectChat}
+      onNewChat={handleNewChat}
+      onDeleteChat={handleDeleteChat}
+      activeModelName={getModelLabel()}
+    >
       {isFaceVoiceModeOpen && (
         <AIFaceVoiceMode
           onClose={() => setIsFaceVoiceModeOpen(false)}
           onSendMessage={handleSendMessage}
         />
       )}
-
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-        history={history}
-        activeChatId={activeChatId}
-        onSelectChat={handleSelectChat}
-        onNewChat={handleNewChat}
-        onDeleteChat={handleDeleteChat}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        activeModelName={getModelLabel()}
-      />
-
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        settings={settings}
-        onSaveSettings={handleSaveSettings}
-        onClearHistory={handleClearHistory}
-      />
-
-      <Header
-        onToggleSidebar={() => setIsSidebarOpen(true)}
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={handleToggleDarkMode}
-        onNewChat={handleNewChat}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-      />
 
       <main className="flex-1 flex flex-col justify-between max-w-3xl w-full mx-auto px-4 pt-4 pb-2">
         {messages.length === 0 ? (
@@ -285,7 +250,15 @@ function ChatApp() {
                 What can I help with?
               </h1>
               <p className="text-sm text-neutral-500 max-w-md mx-auto">
-                Neuriy AI · powered by ElloFive. Type a prompt or pick a suggestion.
+                Neuriy AI · powered by ElloFive. Browse the{" "}
+                <button
+                  type="button"
+                  onClick={() => router.push("/marketplace")}
+                  className="text-[#1e6fff] font-medium underline-offset-2 hover:underline"
+                >
+                  Marketplace
+                </button>{" "}
+                for tools the AI can use.
               </p>
             </div>
             <div className="w-full mt-auto pt-8">
@@ -310,7 +283,7 @@ function ChatApp() {
             {toolPhase && (
               <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400 py-2">
                 <Wrench className="w-3.5 h-3.5" />
-                <span>Marketplace-tool actief…</span>
+                <span>Marketplace tool active…</span>
               </div>
             )}
 
@@ -322,7 +295,7 @@ function ChatApp() {
                   onClick={handleAbort}
                   className="ml-2 underline text-neutral-500"
                 >
-                  Annuleren
+                  Cancel
                 </button>
               </div>
             )}
@@ -343,6 +316,6 @@ function ChatApp() {
           />
         </div>
       </main>
-    </div>
+    </ChatShell>
   );
 }

@@ -20,7 +20,11 @@ Neuriy AI chat application (`chat.neuriy.com`) — powered by **ElloFive (Ello5)
 |----------------------|----------------------------|
 | ![Voice AI Face](docs/demo/07-voice-ai-face.png) | ![Voice chat](docs/demo/08-voice-chat-synced.png) |
 
-Voice + AI Face: mic (Chrome/Safari), typed fallback, ElloFive replies spoken aloud (`npm run voice:smoke`).
+| Marketplace page | Settings page |
+|------------------|---------------|
+| ![Marketplace](docs/demo/09-marketplace-page.png) | ![Settings](docs/demo/10-settings-page.png) |
+
+Marketplace and Settings are **in-chat pages** (not popups), styled like [Neuriy-Marketplace](https://github.com/neuriy/Neuriy-Marketplace). Uploaded tools appear in the catalog; ElloFive can search/open them via Marketplace AI tools.
 
 ## Neuriy AI + ElloFive
 

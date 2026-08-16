@@ -21,6 +21,11 @@ export async function GET(req: Request) {
   const q = url.searchParams.get("q") || undefined;
   const category = url.searchParams.get("category") || undefined;
   const sort = url.searchParams.get("sort") || undefined;
+  const featured =
+    url.searchParams.get("featured") === "1" ||
+    url.searchParams.get("featured") === "true"
+      ? true
+      : undefined;
   const limit = Number(url.searchParams.get("limit") || "20");
   const forceRefresh = url.searchParams.get("refresh") === "1";
   const ifNoneMatch = req.headers.get("if-none-match");
@@ -28,7 +33,7 @@ export async function GET(req: Request) {
   try {
     const result = await searchApps(
       traceId,
-      { q, category, sort, limit },
+      { q, category, sort, limit, featured },
       {
         forceRefresh,
         ifNoneMatch: ifNoneMatch || undefined,

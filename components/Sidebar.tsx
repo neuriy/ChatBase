@@ -9,6 +9,7 @@ import {
   Zap,
   Sliders,
   ExternalLink,
+  Store,
 } from "lucide-react";
 import { NeuriyLogo } from "./NeuriyLogo";
 
@@ -28,7 +29,9 @@ interface SidebarProps {
   onNewChat: () => void;
   onDeleteChat: (id: string) => void;
   onOpenSettings: () => void;
+  onOpenMarketplace?: () => void;
   activeModelName?: string;
+  activePath?: string | null;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -40,7 +43,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onNewChat,
   onDeleteChat,
   onOpenSettings,
+  onOpenMarketplace,
   activeModelName = "Neuriy 1.1 Pro",
+  activePath = null,
 }) => {
   if (!isOpen) return null;
 
@@ -80,21 +85,44 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* Neuriy Settings Button */}
-        <div className="px-3 pb-2">
+        <div className="px-3 pb-2 space-y-2">
           <button
             onClick={() => {
               onOpenSettings();
               onClose();
             }}
-            className="w-full flex items-center justify-between px-3 py-2.5 bg-neutral-100 dark:bg-neutral-800/60 hover:bg-neutral-200/70 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 rounded-xl text-xs font-medium transition-colors"
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-colors ${
+              activePath?.startsWith("/settings")
+                ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900"
+                : "bg-neutral-100 dark:bg-neutral-800/60 hover:bg-neutral-200/70 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200"
+            }`}
           >
             <div className="flex items-center gap-2">
-              <Sliders className="w-3.5 h-3.5 text-neutral-700 dark:text-neutral-300" />
-              <span>Neuriy Settings</span>
+              <Sliders className="w-3.5 h-3.5" />
+              <span>Settings</span>
             </div>
-            <span className="text-[10px] text-neutral-400">Manage</span>
+            <span className="text-[10px] opacity-70">Page</span>
           </button>
+
+          {onOpenMarketplace && (
+            <button
+              onClick={() => {
+                onOpenMarketplace();
+                onClose();
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-colors ${
+                activePath?.startsWith("/marketplace")
+                  ? "bg-[#1e6fff] text-white"
+                  : "bg-neutral-100 dark:bg-neutral-800/60 hover:bg-neutral-200/70 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Store className="w-3.5 h-3.5" />
+                <span>Marketplace</span>
+              </div>
+              <span className="text-[10px] opacity-70">Store</span>
+            </button>
+          )}
         </div>
 
         {/* Chat History List */}

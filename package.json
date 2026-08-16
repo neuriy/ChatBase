@@ -13,7 +13,8 @@
     "ui:smoke": "node scripts/ui-smoke.mjs",
     "demo:capture": "node scripts/capture-demo.mjs",
     "voice:smoke": "node scripts/voice-face-smoke.mjs",
-    "auth:cors:smoke": "node scripts/auth-cors-smoke.mjs"
+    "auth:cors:smoke": "node scripts/auth-cors-smoke.mjs",
+    "pages:smoke": "node scripts/pages-smoke.mjs"
   },
   "dependencies": {
     "@neuriy/auth": "file:vendor/neuriy-auth",

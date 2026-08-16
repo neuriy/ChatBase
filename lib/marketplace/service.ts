@@ -35,6 +35,8 @@ export type MarketplaceStatus = {
   lastSuccessfulSync: string | null;
   health: unknown | null;
   error: string | null;
+  apiBaseUrl: string;
+  storeUrl: string;
   cacheTtl: {
     listSec: number;
     itemSec: number;
@@ -58,6 +60,8 @@ export function getMarketplaceStatusSnapshot(): MarketplaceStatus {
     lastSuccessfulSync,
     health: null,
     error: null,
+    apiBaseUrl: env.marketplaceUrl,
+    storeUrl: env.marketplaceStoreUrl,
     cacheTtl: {
       listSec: env.cacheTtlListSec,
       itemSec: env.cacheTtlItemSec,
@@ -121,12 +125,14 @@ export async function searchApps(
     category?: string;
     sort?: string;
     limit?: number;
+    featured?: boolean;
   },
   opts?: { forceRefresh?: boolean; userBearer?: string; ifNoneMatch?: string }
 ) {
   assertFeature();
   const limit = Math.min(Math.max(params.limit ?? 12, 1), 50);
-  const key = `apps:${params.q || ""}:${params.category || ""}:${params.sort || "popular"}`;
+  const featuredKey = params.featured ? "1" : "";
+  const key = `apps:${params.q || ""}:${params.category || ""}:${params.sort || "popular"}:${featuredKey}`;
 
   if (!opts?.forceRefresh) {
     const hit = cacheGet<MarketplaceApp[]>(key);
@@ -149,6 +155,7 @@ export async function searchApps(
       q: params.q,
       category: params.category,
       sort: params.sort,
+      featured: params.featured ? "true" : undefined,
     },
     { userBearer: opts?.userBearer }
   );

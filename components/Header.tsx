@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Moon, Sun, Plus } from "lucide-react";
+import { Moon, Sun, Plus, Store } from "lucide-react";
 import { NeuriyLogo } from "./NeuriyLogo";
 
 interface HeaderProps {
@@ -10,6 +10,7 @@ interface HeaderProps {
   onToggleDarkMode: () => void;
   onNewChat: () => void;
   onOpenSettings: () => void;
+  onOpenMarketplace?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleDarkMode,
   onNewChat,
   onOpenSettings,
+  onOpenMarketplace,
 }) => {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#ededed]/90 dark:bg-[#141414]/90 backdrop-blur-md transition-colors border-b border-neutral-200/40 dark:border-neutral-800/40">
@@ -44,8 +46,19 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Right section: New Chat, Theme toggle & Profile Settings */}
+      {/* Right section: Marketplace, New Chat, Theme, Settings */}
       <div className="flex items-center gap-2">
+        {onOpenMarketplace && (
+          <button
+            onClick={onOpenMarketplace}
+            title="Neuriy Marketplace"
+            className="hidden sm:inline-flex px-3 py-1.5 rounded-xl text-xs font-semibold text-[#1e6fff] bg-[#e8f1ff] dark:bg-blue-950/40 hover:opacity-90 items-center gap-1.5"
+          >
+            <Store className="w-3.5 h-3.5" />
+            Marketplace
+          </button>
+        )}
+
         <button
           onClick={onNewChat}
           title="New Chat"
@@ -64,10 +77,9 @@ export const Header: React.FC<HeaderProps> = ({
           {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
 
-        {/* Metallic orb profile sphere opening settings */}
         <button
           onClick={onOpenSettings}
-          title="Neuriy User Profile & AI Settings"
+          title="Neuriy Settings"
           className="w-8 h-8 rounded-full metallic-orb border border-white/40 cursor-pointer transition-transform hover:scale-105 active:scale-95 shrink-0"
         />
       </div>
