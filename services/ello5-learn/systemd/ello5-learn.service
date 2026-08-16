@@ -1,0 +1,17 @@
+[Unit]
+Description=Neuriy Ello5 continuous learning (Hugging Face + chat feedback)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/neuriy/ChatBase
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/opt/neuriy/ChatBase/.env.learn
+ExecStart=/opt/neuriy/ChatBase/services/ello5-learn/.venv/bin/python /opt/neuriy/ChatBase/services/ello5-learn/worker.py
+Restart=always
+RestartSec=20
+
+[Install]
+WantedBy=multi-user.target

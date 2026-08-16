@@ -40,7 +40,7 @@ User → IDHook (auth) → Neuriy Chat UI → tools → ElloFive (Ello5) → rep
 | **Neuriy-Marketplace** | Apps / tools catalog |
 | **FRC7 patterns** | Flags, orchestration conventions |
 
-See [docs/NEURIY_ELLOFIVE.md](docs/NEURIY_ELLOFIVE.md) · [Frontend-cms + IDHook](docs/FRONTEND_CMS.md).
+See [docs/NEURIY_ELLOFIVE.md](docs/NEURIY_ELLOFIVE.md) · [Frontend-cms + IDHook](docs/FRONTEND_CMS.md) · [Ello5 continuous learning](docs/ELLO5_CONTINUOUS_LEARNING.md).
 
 ## Quick start
 
@@ -86,6 +86,9 @@ node scripts/capture-demo.mjs   # writes docs/demo/*.png + neuriy-demo.webm/mp4
 | `npm test` | Vitest |
 | `npm run ui:smoke` | Playwright UI smoke |
 | `npm run voice:smoke` | AI Face + Voice Mode smoke |
+| `npm run pages:smoke` | Marketplace / Settings pages |
+| `npm run ello5:learn:once` | One Ello5 HF learning cycle |
+| `npm run ello5:learn` | Ello5 continuous learning daemon |
 | `npm run lint` | ESLint |
 
 ## Feature flags

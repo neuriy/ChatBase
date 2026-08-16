@@ -50,3 +50,14 @@ artifacts/
 # temp auth files
 components/AuthGate.backup.tsx
 components/AuthGate.tmp.tsx
+
+# Ello5 continuous learning artifacts (keep manual seed)
+data/ello5-learn/hf-cache/
+data/ello5-learn/runs/
+data/ello5-learn/adapters/
+data/ello5-learn/inbox/
+data/ello5-learn/hf_instructions.jsonl
+data/ello5-learn/knowledge.jsonl
+data/ello5-learn/knowledge_meta.json
+data/ello5-learn/last_cycle.json
+services/ello5-learn/.venv/

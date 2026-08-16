@@ -23,6 +23,8 @@ export interface Message {
 interface ChatMessageProps {
   message: Message;
   onRegenerate?: () => void;
+  /** Prior user prompt — used when thumbs-up sends a learning example to Ello5 */
+  userPrompt?: string;
 }
 
 type Block =
@@ -60,6 +62,7 @@ function downloadBlob(filename: string, text: string, mime: string) {
 export const ChatMessage: React.FC<ChatMessageProps> = ({
   message,
   onRegenerate,
+  userPrompt,
 }) => {
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState<boolean | null>(null);
@@ -72,6 +75,29 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
     navigator.clipboard.writeText(message.content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const sendLearn = async (isLiked: boolean) => {
+    if (!userPrompt || !isLiked) return;
+    try {
+      await fetch("/api/learn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: userPrompt,
+          response: message.content,
+          liked: true,
+        }),
+      });
+    } catch {
+      /* best-effort learning signal */
+    }
+  };
+
+  const handleLike = () => {
+    const next = liked === true ? null : true;
+    setLiked(next);
+    if (next) void sendLearn(true);
   };
 
   const handleSpeak = () => {
@@ -213,8 +239,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           )}
         </button>
         <button
-          onClick={() => setLiked(liked === true ? null : true)}
-          title="Good response"
+          onClick={handleLike}
+          title="Good response — teach Ello5"
           className={`p-1 rounded-md transition-colors ${
             liked === true
               ? "text-blue-500"

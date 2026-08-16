@@ -2,7 +2,10 @@
  * ElloFive / Ello5 conversational brain for Neuriy ChatBase.
  * Multi-turn Neuriy replies; used when Ollama is not available,
  * and as the in-process engine behind the ElloFive-compatible gateway.
+ * Improves automatically via services/ello5-learn knowledge bank (HF + chat).
  */
+
+import { retrieveLearned, knowledgeStats } from "./knowledge.mjs";
 
 function clip(s, n) {
   const t = String(s || "");
@@ -54,6 +57,15 @@ function extractMarketplaceLines(system) {
 
 function conversationalCore(q, ctx) {
   const lower = q.toLowerCase();
+
+  // Continuous learning: prefer matched knowledge from HF + Neuriy chat feedback
+  const learned = retrieveLearned(q);
+  if (learned?.response) {
+    const stamp = learned.source?.startsWith("chat:")
+      ? "_Learned from Neuriy chat feedback_"
+      : "_Improved via Ello5 continuous learning (Hugging Face / chat)_";
+    return `${learned.response}\n\n${stamp}`;
+  }
 
   if (/^(hi|hello|hey|hoi|hallo)\b/.test(lower) || /\bwho are you\b/.test(lower)) {
     return (
@@ -162,5 +174,6 @@ export function ellofiveGenerate({ messages = [], message = "", model = "ellofiv
     latencyMs: Date.now() - started,
     runtime: "ElloFive",
     product: "Neuriy",
+    learning: knowledgeStats(),
   };
 }

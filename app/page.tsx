@@ -270,15 +270,22 @@ function ChatApp() {
             ref={chatContainerRef}
             className="flex-1 overflow-y-auto py-6 px-2 space-y-4 max-h-[calc(100vh-210px)]"
           >
-            {messages.map((msg) => (
+            {messages.map((msg, idx) => {
+              const prevUser =
+                [...messages.slice(0, idx)]
+                  .reverse()
+                  .find((m) => m.sender === "user")?.content || "";
+              return (
               <ChatMessage
                 key={msg.id}
                 message={msg}
+                userPrompt={msg.sender === "assistant" ? prevUser : undefined}
                 onRegenerate={
                   msg.sender === "assistant" ? handleRegenerate : undefined
                 }
               />
-            ))}
+              );
+            })}
 
             {toolPhase && (
               <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400 py-2">

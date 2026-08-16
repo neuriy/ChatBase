@@ -1,0 +1,47 @@
+# Ello5 continuous learning — DigitalOcean 24/7 worker
+# Hugging Face datasets + Neuriy chat feedback → knowledge bank (+ optional LoRA)
+
+data_dir: data/ello5-learn
+knowledge_path: data/ello5-learn/knowledge.jsonl
+chat_inbox: data/ello5-learn/inbox/chat.jsonl
+hf_cache: data/ello5-learn/hf-cache
+runs_dir: data/ello5-learn/runs
+
+# Loop forever on the droplet (seconds between cycles)
+cycle_seconds: 21600   # 6 hours — day & night
+
+# Hugging Face datasets (id + optional split + text fields)
+huggingface:
+  token_env: HF_TOKEN
+  datasets:
+    - id: HuggingFaceH4/ultrachat_200k
+      split: train_sft
+      max_rows: 2000
+      format: ultrachat
+    - id: OpenAssistant/oasst1
+      split: train
+      max_rows: 1500
+      format: oasst
+    - id: tatsu-lab/alpaca
+      split: train
+      max_rows: 2000
+      format: alpaca
+
+# Base model for optional LoRA (needs GPU). Skipped automatically on CPU-only droplets.
+train:
+  enabled: true
+  require_gpu: true
+  base_model: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+  output_dir: data/ello5-learn/adapters/ellofive-lora
+  epochs: 1
+  max_steps: 200
+  learning_rate: 2.0e-4
+  batch_size: 1
+  ollama_model: ellofive
+  ollama_host: http://127.0.0.1:11434
+
+# Always-on improvement without GPU: refresh retrieval knowledge for the Ello5 brain
+knowledge:
+  enabled: true
+  max_entries: 5000
+  min_score_chars: 40

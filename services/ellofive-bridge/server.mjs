@@ -11,7 +11,17 @@
  */
 
 import http from "node:http";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { ellofiveGenerate } from "./brain.mjs";
+import { knowledgeStats } from "./knowledge.mjs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, "../..");
+const CHAT_INBOX =
+  process.env.ELLO5_CHAT_INBOX ||
+  path.join(ROOT, "data/ello5-learn/inbox/chat.jsonl");
 
 const PORT = Number(process.env.ELLOFIVE_PORT || process.env.PORT || 3999);
 const UPSTREAM =
@@ -124,7 +134,36 @@ const server = http.createServer(async (req, res) => {
       upstream: UPSTREAM || null,
       models: models.length ? models : [DEFAULT_MODEL, "ellofive-fast", "neuriy.chat"],
       runtime: "ellofive-bridge",
+      learning: knowledgeStats(),
     });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/learn") {
+    // Accept chat feedback pairs for continuous learning inbox
+    const body = await readJson(req);
+    const prompt = String(body.prompt || body.user || "").trim();
+    const response = String(body.response || body.assistant || "").trim();
+    if (!prompt || !response) {
+      sendJson(res, 400, { error: "prompt and response required" });
+      return;
+    }
+    const row = {
+      prompt: prompt.slice(0, 4000),
+      response: response.slice(0, 6000),
+      source: body.source || "chat:api",
+      ts: new Date().toISOString(),
+      meta: { liked: Boolean(body.liked), traceId: body.traceId || null },
+    };
+    try {
+      fs.mkdirSync(path.dirname(CHAT_INBOX), { recursive: true });
+      fs.appendFileSync(CHAT_INBOX, JSON.stringify(row) + "\n", "utf8");
+      sendJson(res, 200, { ok: true, inbox: CHAT_INBOX, learning: knowledgeStats() });
+    } catch (err) {
+      sendJson(res, 500, {
+        error: err instanceof Error ? err.message : "write_failed",
+      });
+    }
     return;
   }
 

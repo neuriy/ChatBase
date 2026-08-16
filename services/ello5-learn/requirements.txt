@@ -1,0 +1,10 @@
+# Ello5 continuous learning (DigitalOcean)
+PyYAML>=6.0
+datasets>=2.19.0
+huggingface_hub>=0.23.0
+
+# Optional LoRA (install on GPU droplets)
+# torch
+# transformers>=4.41.0
+# peft>=0.11.0
+# accelerate>=0.30.0

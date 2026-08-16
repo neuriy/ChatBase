@@ -69,5 +69,6 @@ export const config = {
     "/api/auth/:path*",
     "/api/health",
     "/api/models",
+    "/api/learn",
   ],
 };
