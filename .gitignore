@@ -63,7 +63,8 @@ data/ello5-learn/last_cycle.json
 services/ello5-learn/.venv/
 
 # Neuriy CDCI / ChatScan local chain + private vault
-data/neuriy-chain/
+data/neuriy-chain/*
+!data/neuriy-chain/.gitkeep
 
 services/ello5-learn/__pycache__/
 **/__pycache__/
