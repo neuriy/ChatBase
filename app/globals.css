@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ededed;
+  --foreground: #1c1c1e;
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --user-bubble: #e2e2e0;
+}
+
+html.dark {
+  --background: #121214;
+  --foreground: #f4f4f5;
+  --card-bg: #1c1c1e;
+  --input-bg: #1e1e20;
+  --user-bubble: #2a2a2c;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom metallic orb gradient matching the reference mockup */
+.metallic-orb {
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #d4d4d8 35%, #919198 70%, #52525b 100%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8), 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dark .metallic-orb {
+  background: radial-gradient(circle at 35% 35%, #52525b 0%, #3f3f46 35%, #27272a 70%, #18181b 100%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Animations for AI Face */
+@keyframes floatBob {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes eyeBlink {
+  0%, 45%, 53%, 100% {
+    transform: scaleY(1);
+  }
+  49% {
+    transform: scaleY(0.08);
+  }
+}
+
+@keyframes mouthTalk {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(2.2);
+  }
+}
+
+.animate-float {
+  animation: floatBob 3.2s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: floatBob 1.8s ease-in-out infinite;
+}
+
+.animate-eye-blink {
+  animation: eyeBlink 3.8s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+.animate-mouth-talk {
+  animation: mouthTalk 0.4s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
