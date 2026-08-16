@@ -1,6 +1,6 @@
 # Neuriy ChatBase
 
-Neuriy AI chat application (`chat.neuriy.com`) — **our own ChatGPT**, powered by **ElloFive**.
+Neuriy AI chat application (`chat.neuriy.com`) — powered by **ElloFive (Ello5)**, Neuriy’s own AI model.
 
 ## Demo (it works)
 
@@ -16,16 +16,16 @@ Neuriy AI chat application (`chat.neuriy.com`) — **our own ChatGPT**, powered 
 |-----------|--------------------|------------------------|
 | ![SVG](docs/demo/04-svg-image.png) | ![Marketplace](docs/demo/05-marketplace.png) | ![Settings](docs/demo/06-settings-marketplace.png) |
 
-## Neuriy AI = our ChatGPT
+## Neuriy AI + ElloFive
 
 ```text
-User → IDHook (auth) → Neuriy Chat UI → tools → ElloFive model → reply
+User → IDHook (auth) → Neuriy Chat UI → tools → ElloFive (Ello5) → reply
 ```
 
 | Piece | Role |
 |-------|------|
-| **Neuriy ChatBase** | ChatGPT-style product UI |
-| **ElloFive** | AI model (`ELLOFIVE_URL`, bridge on `:3999`) |
+| **Neuriy ChatBase** | Neuriy chat product UI |
+| **ElloFive (Ello5)** | Neuriy’s AI model (`ELLOFIVE_URL`, bridge on `:3999`) |
 | **IDHook** | Auth gate |
 | **Neuriy-Marketplace** | Apps / tools catalog |
 | **FRC7 patterns** | Flags, orchestration conventions |

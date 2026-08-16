@@ -1,24 +1,24 @@
-# Neuriy AI stack — our ChatGPT
+# Neuriy AI stack — powered by ElloFive
 
 ```text
 User
   ↓
 IDHook Auth Gate          (identity)
   ↓
-Neuriy ChatBase UI        (ChatGPT-style product)
+Neuriy ChatBase UI        (Neuriy chat product)
   ↓
 Chat orchestrator         (/api/chat)
   ├─ Marketplace tools    (Neuriy-Marketplace API)
   ├─ Product tools        (HTML / SVG / task / live)
-  └─ ElloFive model       (ELLOFIVE_URL → /v1/chat)  ← the brain
+  └─ ElloFive (Ello5)     (ELLOFIVE_URL → /v1/chat)  ← Neuriy’s model
         ↓
    Final Neuriy reply (+ artifacts)
 ```
 
 | Piece | Role |
 |-------|------|
-| **Neuriy ChatBase** | Product / ChatGPT UX |
-| **ElloFive (Ello5)** | AI model that writes answers |
+| **Neuriy ChatBase** | Neuriy chat product |
+| **ElloFive (Ello5)** | Neuriy’s AI model that writes answers |
 | **IDHook** | Login / session |
 | **Neuriy-Marketplace** | Apps catalog tools |
 | **FRC7 patterns** | Flags, tool loop, infra conventions |
@@ -40,4 +40,4 @@ Optional: set `ELLOFIVE_UPSTREAM=http://127.0.0.1:11434` (Ollama) or a real Ello
 
 ## Mental model
 
-Neuriy is the **assistant product**. ElloFive is the **model**. Together they are our own ChatGPT.
+**Neuriy** is the product. **ElloFive (Ello5)** is Neuriy’s own AI model. Replies come from Ello5 — not a third-party chat brand.

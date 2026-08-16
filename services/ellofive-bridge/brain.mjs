@@ -1,6 +1,6 @@
 /**
  * ElloFive / Ello5 conversational brain for Neuriy ChatBase.
- * ChatGPT-style multi-turn replies; used when Ollama is not available,
+ * Multi-turn Neuriy replies; used when Ollama is not available,
  * and as the in-process engine behind the ElloFive-compatible gateway.
  */
 
@@ -57,7 +57,7 @@ function conversationalCore(q, ctx) {
 
   if (/^(hi|hello|hey|hoi|hallo)\b/.test(lower) || /\bwho are you\b/.test(lower)) {
     return (
-      "I'm **Neuriy AI** — your ChatGPT-style assistant, powered by the **ElloFive (Ello5)** model.\n\n" +
+      "I'm **Neuriy AI**, powered by **ElloFive (Ello5)** — Neuriy’s own AI model.\n\n" +
       "I can chat naturally, reason through problems, write code, build HTML pages, draw SVG images, " +
       "plan tasks, discuss live topics, and search the Neuriy Marketplace when you need apps or tools.\n\n" +
       "What would you like to work on?"
@@ -67,9 +67,9 @@ function conversationalCore(q, ctx) {
   if (/\b(what (is|are) (you|neuriy|ellofive)|how do you work)\b/.test(lower)) {
     return (
       "**Neuriy** is the product (chat UX + auth + marketplace + tools).\n" +
-      "**ElloFive / Ello5** is the AI model that powers my replies.\n" +
+      "**ElloFive / Ello5** is Neuriy’s AI model that powers my replies.\n" +
       "**IDHook** handles identity; **FRC7** patterns power orchestration and infrastructure.\n\n" +
-      "Together they form Neuriy AI — our own ChatGPT-like stack."
+      "Together they are Neuriy AI — built around Ello5, not a third-party chat brand."
     );
   }
 
@@ -117,14 +117,14 @@ function conversationalCore(q, ctx) {
     );
   }
 
-  // Default ChatGPT-like structured answer
+  // Default Neuriy / Ello5 structured answer
   const hist = ctx.history ? `\n\n_Recent context:_\n${clip(ctx.history, 500)}` : "";
   return (
-    `**Neuriy AI** (ElloFive model)\n\n` +
+    `**Neuriy AI** (ElloFive / Ello5)\n\n` +
     `You said: “${clip(q, 320)}”\n\n` +
     `Here's a clear answer: I understand the request and can take it further — explain deeper, write code, ` +
     `produce an HTML page, draw an SVG, search the Marketplace, or turn it into a step-by-step task.\n\n` +
-    `Pick a direction (or keep chatting) and I'll continue as your Neuriy assistant.` +
+    `Pick a direction (or keep chatting) and I'll continue as Neuriy, powered by Ello5.` +
     hist
   );
 }
