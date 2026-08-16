@@ -33,12 +33,14 @@ export const env = {
   marketplaceToken: process.env.NEURIY_MARKETPLACE_TOKEN || "",
   marketplaceTimeoutMs: num("NEURIY_MARKETPLACE_TIMEOUT_MS", 8000),
 
-  ellofiveUrl: (process.env.ELLOFIVE_URL || "http://127.0.0.1:3000").replace(
+  ellofiveUrl: (process.env.ELLOFIVE_URL || "http://127.0.0.1:3999").replace(
     /\/$/,
     ""
   ),
   ellofiveModel: process.env.ELLOFIVE_MODEL || "ellofive",
   ellofiveTimeoutMs: num("ELLOFIVE_TIMEOUT_MS", 60000),
+  /** Optional: real Ollama or upstream ElloFive — used by services/ellofive-bridge */
+  ellofiveUpstream: process.env.ELLOFIVE_UPSTREAM || process.env.OLLAMA_HOST || "",
 
   firebaseProjectId:
     process.env.FIREBASE_PROJECT_ID ||

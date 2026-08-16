@@ -282,7 +282,7 @@ function ChatApp() {
                 What can I help with?
               </h1>
               <p className="text-sm text-neutral-500 max-w-md mx-auto">
-                Type a prompt below or pick a quick suggestion to begin.
+                Neuriy AI · powered by ElloFive. Type a prompt or pick a suggestion.
               </p>
             </div>
             <div className="w-full mt-auto pt-8">
