@@ -1,0 +1,58 @@
+{
+  "name": "@neuriy/auth",
+  "version": "1.0.0",
+  "description": "Neuriy nID Authentication SDK — plug-and-play Firebase auth for any React or vanilla JS app.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "browser": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "firebase": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.28",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  },
+  "keywords": [
+    "neuriy",
+    "auth",
+    "firebase",
+    "authentication",
+    "sdk"
+  ],
+  "author": "Neuriy",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neuriy/nid"
+  }
+}

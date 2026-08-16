@@ -8,48 +8,27 @@ import { SuggestionPills } from "@/components/SuggestionPills";
 import { ChatInput } from "@/components/ChatInput";
 import { SettingsModal, SettingsState } from "@/components/SettingsModal";
 import { AIFaceVoiceMode } from "@/components/AIFaceVoiceMode";
-import { RefreshCw } from "lucide-react";
-
-// Initial demo messages
-const MOCKUP_CONVERSATION: Message[] = [
-  {
-    id: "m1",
-    sender: "assistant",
-    content:
-      "Let's troubleshoot like tech ninjas 🥷💻\nFirst question: Did you install or update anything recently?",
-  },
-  {
-    id: "m2",
-    sender: "user",
-    content: "I installed a few Chrome extensions and updated Zoom.",
-  },
-  {
-    id: "m3",
-    sender: "assistant",
-    content:
-      "Chrome extensions... the usual suspects. 🕵️\nLet's try this:\n1. Disable unnecessary extensions\n2. Clear browser cache\n3. Restart your laptop\nAlso, how's your disk space looking?",
-  },
-  {
-    id: "m4",
-    sender: "user",
-    content: "Pretty full. Like, 12GB left on a 256GB SSD.",
-  },
-  {
-    id: "m5",
-    sender: "assistant",
-    content:
-      "Yep, your laptop's gasping for space.\nTry cleaning up large files or\noffloading to the cloud.",
-  },
-];
+import { AuthGate } from "@/components/AuthGate";
+import { RefreshCw, Wrench } from "lucide-react";
 
 export default function Home() {
+  return (
+    <AuthGate>
+      <ChatApp />
+    </AuthGate>
+  );
+}
+
+function ChatApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFaceVoiceModeOpen, setIsFaceVoiceModeOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [toolPhase, setToolPhase] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  // Settings State
   const [settings, setSettings] = useState<SettingsState>({
     model: "pro",
     temperature: 0.7,
@@ -59,29 +38,11 @@ export default function Home() {
     isDarkMode: false,
   });
 
-  // Active chat state
-  const [messages, setMessages] = useState<Message[]>(MOCKUP_CONVERSATION);
-  const [activeChatId, setActiveChatId] = useState<string>("demo-1");
-
-  // History list
-  const [history, setHistory] = useState<ChatHistoryItem[]>([
-    {
-      id: "demo-1",
-      title: "Tech Ninjas Troubleshooting",
-      timestamp: "Just now",
-      preview: "Yep, your laptop's gasping for space...",
-    },
-    {
-      id: "demo-2",
-      title: "UI Contrast & Accessibility",
-      timestamp: "2 hours ago",
-      preview: "Evaluating AA & AAA contrast ratios...",
-    },
-  ]);
-
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string>("chat-" + Date.now());
+  const [history, setHistory] = useState<ChatHistoryItem[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // On mount: sync theme with localStorage or system preference
   useEffect(() => {
     const saved = localStorage.getItem("neuriy_theme");
     const isDark =
@@ -89,30 +50,29 @@ export default function Home() {
       (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
     setIsDarkMode(isDark);
     setSettings((prev) => ({ ...prev, isDarkMode: isDark }));
-
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    if (isDark) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
   }, []);
 
-  // Update browser document title dynamically: Neuriy | {what user doing}
   useEffect(() => {
-    if (isFaceVoiceModeOpen) {
-      document.title = "Neuriy | Voice Assistant Mode";
-    } else if (isSettingsOpen) {
-      document.title = "Neuriy | Settings";
-    } else if (isGenerating) {
-      document.title = "Neuriy | Thinking...";
-    } else if (messages.length === 0) {
-      document.title = "Neuriy | What can I help with?";
-    } else {
+    if (isFaceVoiceModeOpen) document.title = "Neuriy | Voice Assistant Mode";
+    else if (isSettingsOpen) document.title = "Neuriy | Settings";
+    else if (toolPhase) document.title = "Neuriy | Marketplace tool…";
+    else if (isGenerating) document.title = "Neuriy | Thinking...";
+    else if (messages.length === 0) document.title = "Neuriy | What can I help with?";
+    else {
       const currentItem = history.find((h) => h.id === activeChatId);
-      const title = currentItem ? currentItem.title : "Tech Ninjas Troubleshooting";
-      document.title = `Neuriy | ${title}`;
+      document.title = `Neuriy | ${currentItem ? currentItem.title : "Chat"}`;
     }
-  }, [isFaceVoiceModeOpen, isSettingsOpen, isGenerating, messages, history, activeChatId]);
+  }, [
+    isFaceVoiceModeOpen,
+    isSettingsOpen,
+    isGenerating,
+    toolPhase,
+    messages,
+    history,
+    activeChatId,
+  ]);
 
   const handleToggleDarkMode = () => {
     setIsDarkMode((prev) => {
@@ -131,61 +91,29 @@ export default function Home() {
 
   const handleSaveSettings = (newSettings: SettingsState) => {
     setSettings(newSettings);
-    if (newSettings.isDarkMode !== isDarkMode) {
-      handleToggleDarkMode();
-    }
+    if (newSettings.isDarkMode !== isDarkMode) handleToggleDarkMode();
   };
 
-  // Auto scroll to bottom when new messages arrive
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messages, isGenerating]);
+  }, [messages, isGenerating, toolPhase]);
 
-  // Start new empty chat
   const handleNewChat = () => {
-    const newId = "chat-" + Date.now();
-    setActiveChatId(newId);
+    setActiveChatId("chat-" + Date.now());
+    setMessages([]);
+    setChatError(null);
+  };
+
+  const handleSelectChat = (id: string) => {
+    setActiveChatId(id);
     setMessages([]);
   };
 
-  // Load exact mockup demo
-  const handleLoadMockupDemo = () => {
-    setActiveChatId("demo-1");
-    setMessages(MOCKUP_CONVERSATION);
-  };
-
-  // Select chat from history
-  const handleSelectChat = (id: string) => {
-    setActiveChatId(id);
-    if (id === "demo-1") {
-      setMessages(MOCKUP_CONVERSATION);
-    } else if (id === "demo-2") {
-      setMessages([
-        {
-          id: "c1",
-          sender: "user",
-          content: "Is contrast strong enough in this UI design?",
-        },
-        {
-          id: "c2",
-          sender: "assistant",
-          content:
-            "Analyzing contrast ratios:\n• Foreground (#1c1c1e) on Background (#ededed) yields a ratio of 14.2:1 (Passes WCAG AAA ✅).\n• Subtle text (#8e8e93) yields 4.6:1 (Passes WCAG AA for normal body text ✅).",
-        },
-      ]);
-    } else {
-      setMessages([]);
-    }
-  };
-
-  // Delete chat item
   const handleDeleteChat = (id: string) => {
     setHistory((prev) => prev.filter((item) => item.id !== id));
-    if (activeChatId === id) {
-      handleNewChat();
-    }
+    if (activeChatId === id) handleNewChat();
   };
 
   const handleClearHistory = () => {
@@ -193,7 +121,6 @@ export default function Home() {
     handleNewChat();
   };
 
-  // Model Display Label
   const getModelLabel = () => {
     switch (settings.model) {
       case "flash":
@@ -207,8 +134,7 @@ export default function Home() {
     }
   };
 
-  // Send message logic with smart AI responses
-  const handleSendMessage = (
+  const handleSendMessage = async (
     text: string,
     options?: {
       isWebSearch?: boolean;
@@ -226,51 +152,78 @@ export default function Home() {
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setIsGenerating(true);
+    setToolPhase(/marketplace|neuriy\s+app|find\s+app|dataset|catalog/i.test(text));
+    setChatError(null);
 
     if (messages.length === 0) {
-      const newHistoryItem: ChatHistoryItem = {
-        id: activeChatId,
-        title: text.slice(0, 30) + (text.length > 30 ? "..." : ""),
-        timestamp: "Just now",
-        preview: text,
-      };
-      setHistory((prev) => [newHistoryItem, ...prev]);
+      setHistory((prev) => [
+        {
+          id: activeChatId,
+          title: text.slice(0, 30) + (text.length > 30 ? "..." : ""),
+          timestamp: "Just now",
+          preview: text,
+        },
+        ...prev,
+      ]);
     }
 
-    setTimeout(() => {
-      let replyText = "";
-      const lower = text.toLowerCase();
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
 
-      if (lower.includes("error") || lower.includes("causing")) {
-        replyText =
-          "Let's trace the root cause! 🔍⚡\n1. Check your browser console or terminal logs for exact stack traces.\n2. Ensure all package dependencies are synchronized (`npm install`).\n3. Verify component prop types and undefined state references.";
-      } else if (lower.includes("contrast") || lower.includes("color")) {
-        replyText =
-          "Great design check! 🎨✨\nYour primary text (#1c1c1e) against background (#ededed) achieves a crisp 14:1 contrast ratio, ensuring high legibility across screens.";
-      } else if (lower.includes("space") || lower.includes("disk")) {
-        replyText =
-          "Freeing up disk space will drastically improve system responsiveness! 🚀\nTry cleaning up large files or offloading to the cloud.";
-      } else {
-        replyText = `Got it! Powered by ${getModelLabel()} ✨\n${
-          options?.isDeepThink || settings.model === "reasoning"
-            ? "Neuriy Deep reasoning complete 💡\n"
-            : ""
-        }${
-          options?.isWebSearch || settings.webSearchDefault
-            ? "Searched the web 🌐\n"
-            : ""
-        }Here is a breakdown for "${text}":\n• Clean modular component structure.\n• Crisp legibility & organic rounded containers.\n• Ask anything else whenever you're ready! 🥷✨`;
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: updatedMessages.map((m) => ({
+            role: m.sender === "user" ? "user" : "assistant",
+            content: m.content,
+          })),
+          model: settings.model,
+          temperature: settings.temperature,
+          webSearch: options?.isWebSearch || settings.webSearchDefault,
+          deepThink: options?.isDeepThink || settings.model === "reasoning",
+        }),
+        signal: ctrl.signal,
+      });
+
+      if (res.status === 401) {
+        setChatError("Sessie verlopen. Log opnieuw in.");
+        setIsGenerating(false);
+        setToolPhase(false);
+        return;
       }
 
-      const assistantMsg: Message = {
-        id: "a-" + Date.now(),
-        sender: "assistant",
-        content: replyText,
-      };
+      const data = await res.json();
+      if (!res.ok) {
+        setChatError(data.error || "Er ging iets mis.");
+        setIsGenerating(false);
+        setToolPhase(false);
+        return;
+      }
 
-      setMessages((prev) => [...prev, assistantMsg]);
+      setToolPhase(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: data.id || "a-" + Date.now(),
+          sender: "assistant",
+          content: data.reply,
+        },
+      ]);
+    } catch (err) {
+      if ((err as Error).name === "AbortError") {
+        setChatError("Verzoek geannuleerd.");
+      } else {
+        setChatError(
+          "AI tijdelijk niet beschikbaar. Probeer het zo opnieuw — de chat blijft werken."
+        );
+      }
+    } finally {
       setIsGenerating(false);
-    }, 900);
+      setToolPhase(false);
+    }
   };
 
   const handleSelectSuggestion = (suggestionText: string) => {
@@ -278,16 +231,14 @@ export default function Home() {
   };
 
   const handleRegenerate = () => {
-    if (messages.length === 0) return;
     const lastUserMsg = [...messages].reverse().find((m) => m.sender === "user");
-    if (lastUserMsg) {
-      handleSendMessage(lastUserMsg.content);
-    }
+    if (lastUserMsg) handleSendMessage(lastUserMsg.content);
   };
+
+  const handleAbort = () => abortRef.current?.abort();
 
   return (
     <div className="min-h-screen flex flex-col bg-[#ededed] dark:bg-[#121214] text-neutral-900 dark:text-neutral-100 transition-colors duration-200">
-      {/* Full-Screen Interactive AI Face Voice Mode */}
       {isFaceVoiceModeOpen && (
         <AIFaceVoiceMode
           onClose={() => setIsFaceVoiceModeOpen(false)}
@@ -295,7 +246,6 @@ export default function Home() {
         />
       )}
 
-      {/* Sidebar Drawer */}
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -308,7 +258,6 @@ export default function Home() {
         activeModelName={getModelLabel()}
       />
 
-      {/* Settings Popup Modal */}
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
@@ -317,7 +266,6 @@ export default function Home() {
         onClearHistory={handleClearHistory}
       />
 
-      {/* Clean Top Header */}
       <Header
         onToggleSidebar={() => setIsSidebarOpen(true)}
         isDarkMode={isDarkMode}
@@ -326,11 +274,8 @@ export default function Home() {
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
-      {/* Main Web Application View */}
       <main className="flex-1 flex flex-col justify-between max-w-3xl w-full mx-auto px-4 pt-4 pb-2">
-        {/* Messages or Empty State */}
         {messages.length === 0 ? (
-          /* Empty State matching left screen of mockup */
           <div className="flex-1 flex flex-col justify-between py-12 items-center text-center my-auto">
             <div className="my-auto space-y-3">
               <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white">
@@ -340,14 +285,11 @@ export default function Home() {
                 Type a prompt below or pick a quick suggestion to begin.
               </p>
             </div>
-
-            {/* Suggestion Pills */}
             <div className="w-full mt-auto pt-8">
               <SuggestionPills onSelectSuggestion={handleSelectSuggestion} />
             </div>
           </div>
         ) : (
-          /* Active Message Thread matching right screen of mockup */
           <div
             ref={chatContainerRef}
             className="flex-1 overflow-y-auto py-6 px-2 space-y-4 max-h-[calc(100vh-210px)]"
@@ -362,16 +304,34 @@ export default function Home() {
               />
             ))}
 
-            {isGenerating && (
+            {toolPhase && (
+              <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400 py-2">
+                <Wrench className="w-3.5 h-3.5" />
+                <span>Marketplace-tool actief…</span>
+              </div>
+            )}
+
+            {isGenerating && !toolPhase && (
               <div className="flex items-center gap-2 text-xs text-neutral-400 py-2 animate-pulse">
                 <RefreshCw className="w-3.5 h-3.5 animate-spin text-neutral-600 dark:text-neutral-300" />
                 <span>Neuriy AI is typing response...</span>
+                <button
+                  onClick={handleAbort}
+                  className="ml-2 underline text-neutral-500"
+                >
+                  Annuleren
+                </button>
+              </div>
+            )}
+
+            {chatError && (
+              <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 rounded-xl px-3 py-2">
+                {chatError}
               </div>
             )}
           </div>
         )}
 
-        {/* Bottom Floating Input Bar */}
         <div className="sticky bottom-0 pt-2 bg-gradient-to-t from-[#ededed] via-[#ededed] dark:from-[#121214] dark:via-[#121214] to-transparent">
           <ChatInput
             onSendMessage={handleSendMessage}

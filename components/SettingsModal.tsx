@@ -5,7 +5,6 @@ import {
   X,
   Zap,
   User,
-  Sliders,
   Sparkles,
   Check,
   Moon,
@@ -15,8 +14,12 @@ import {
   Globe,
   Brain,
   Terminal,
+  Store,
 } from "lucide-react";
 import { NeuriyLogoMark } from "./NeuriyLogo";
+import { MarketplaceSettingsPanel } from "./MarketplaceSettings";
+import { logoutNeuriy } from "./AuthGate";
+import { useNeuriyAuth } from "@neuriy/auth";
 
 export interface SettingsState {
   model: "pro" | "flash" | "reasoning" | "code";
@@ -42,8 +45,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onSaveSettings,
   onClearHistory,
 }) => {
-  const [activeTab, setActiveTab] = useState<"model" | "user" | "data">("model");
+  const [activeTab, setActiveTab] = useState<
+    "model" | "user" | "data" | "marketplace"
+  >("model");
   const [localSettings, setLocalSettings] = useState<SettingsState>(settings);
+  const { user } = useNeuriyAuth();
 
   if (!isOpen) return null;
 
@@ -123,6 +129,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             >
               <Shield className="w-3.5 h-3.5" />
               <span>Data & Privacy</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("marketplace")}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-colors ${
+                activeTab === "marketplace"
+                  ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold shadow-xs"
+                  : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              }`}
+            >
+              <Store className="w-3.5 h-3.5" />
+              <span>Neuriy Marketplace</span>
             </button>
           </div>
 
@@ -380,8 +398,28 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     <span>Clear All History</span>
                   </button>
                 </div>
+
+                <div className="bg-white dark:bg-[#1c1c1e] p-4 rounded-2xl border border-neutral-200/70 dark:border-neutral-800 space-y-2">
+                  <h4 className="text-xs font-semibold text-neutral-900 dark:text-white">
+                    Account
+                  </h4>
+                  <p className="text-[11px] text-neutral-500">
+                    {user?.email || user?.uid || "Ingelogd via IDHook"}
+                  </p>
+                  <button
+                    onClick={async () => {
+                      await logoutNeuriy();
+                      onClose();
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-xs font-semibold mt-2"
+                  >
+                    Uitloggen
+                  </button>
+                </div>
               </div>
             )}
+
+            {activeTab === "marketplace" && <MarketplaceSettingsPanel />}
           </div>
 
           {/* Footer Save Actions */}
