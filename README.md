@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Neuriy ChatBase
 
-## Getting Started
+Neuriy AI chat application (`chat.neuriy.com`) with **IDHook auth**, **ElloFive** generation, and **Neuriy Marketplace** integration.
 
-First, run the development server:
+## Quick start
 
 ```bash
+cp .env.example .env.local
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Integration docs
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [API contracts (discovered)](docs/API_CONTRACTS.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Environment / feature flags](docs/ENVIRONMENT.md)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Local Next.js |
+| `npm run build` | Production build |
+| `npm test` | Vitest (auth/cache/tools/injection) |
+| `npm run lint` | ESLint |
 
-To learn more about Next.js, take a look at the following resources:
+## Feature flags
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Marketplace + AI tools default **off** when `NODE_ENV=production`. Enable with:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+FEATURE_MARKETPLACE=true
+FEATURE_MARKETPLACE_AI_TOOLS=true
+```

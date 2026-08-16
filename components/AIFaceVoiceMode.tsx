@@ -6,7 +6,7 @@ import { AIFace } from "./AIFace";
 
 interface AIFaceVoiceModeProps {
   onClose: () => void;
-  onSendMessage: (text: string) => Promise<string> | void;
+  onSendMessage: (text: string) => Promise<string> | Promise<void> | void;
 }
 
 export const AIFaceVoiceMode: React.FC<AIFaceVoiceModeProps> = ({
