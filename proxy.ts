@@ -19,7 +19,8 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/api/marketplace") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/health") ||
-    pathname.startsWith("/api/models");
+    pathname.startsWith("/api/models") ||
+    pathname.startsWith("/api/chain");
 
   if (request.method === "OPTIONS" && corsApi) {
     return new NextResponse(null, {
@@ -33,7 +34,8 @@ export function proxy(request: NextRequest) {
 
   const protectedApi =
     pathname.startsWith("/api/chat") ||
-    pathname.startsWith("/api/marketplace");
+    pathname.startsWith("/api/marketplace") ||
+    pathname.startsWith("/api/chain/vault");
 
   if (protectedApi) {
     const auth = request.headers.get("authorization");
@@ -70,5 +72,6 @@ export const config = {
     "/api/health",
     "/api/models",
     "/api/learn",
+    "/api/chain/:path*",
   ],
 };

@@ -1,0 +1,34 @@
+{
+  "name": "@crypterchat/chatscan-sdk",
+  "version": "0.1.0",
+  "description": "Client SDK for chat apps: encrypt a message locally, anchor it on the CDCI X11 blockchain, and record it on a ChatScan explorer.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "chatscan",
+    "crypterchat",
+    "cdci",
+    "x11",
+    "blockchain",
+    "end-to-end-encryption",
+    "sdk"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crypterchat/chatscan.git",
+    "directory": "sdk"
+  }
+}

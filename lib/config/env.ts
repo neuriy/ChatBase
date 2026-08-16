@@ -64,6 +64,22 @@ export const env = {
 
   nidLoginUrl: process.env.NEURIY_NID_URL || "https://id.neuriy.com",
 
+  /**
+   * ChatScan explorer (https://github.com/crypterchat/chatscan).
+   * When unset, Neuriy uses a local CDCI-style commitment store.
+   */
+  chatscanUrl: (process.env.CHATSCAN_URL || "").replace(/\/$/, ""),
+  chatscanIngestKey: process.env.CHATSCAN_INGEST_KEY || "",
+  /**
+   * Central DB / CHub API (https://github.com/Centraldb/chub).
+   * Registers digests only — never message content.
+   */
+  centraldbUrl: (process.env.CENTRALDB_URL || "").replace(/\/$/, ""),
+  centraldbApiKey: process.env.CENTRALDB_API_KEY || "",
+  /** CDCI chain id used in ChatScan-style commitments. */
+  chainId: process.env.NEURIY_CHAIN_ID || "neuriy-cdci-local",
+  chainTimeoutMs: num("CHAIN_TIMEOUT_MS", 8000),
+
   /** Character budget for marketplace tool results injected into the model. */
   marketplaceContextBudgetChars: num("MARKETPLACE_CONTEXT_BUDGET_CHARS", 4000),
   marketplaceToolRateLimitPerMinute: num(
@@ -80,6 +96,8 @@ export const env = {
   flags: {
     marketplace: bool("FEATURE_MARKETPLACE", defaultFlagsOn),
     marketplaceAiTools: bool("FEATURE_MARKETPLACE_AI_TOOLS", defaultFlagsOn),
+    /** Persist chat turns as CDCI/ChatScan commitments + Central DB hashes. */
+    chainPersist: bool("FEATURE_CHAIN_PERSIST", defaultFlagsOn),
   },
 } as const;
 

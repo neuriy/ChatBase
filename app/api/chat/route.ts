@@ -237,6 +237,40 @@ export async function POST(req: Request) {
       }
     }
 
+    // ChatScan / CDCI / Central DB: commit turn as PRIVATE (hash + anchor only)
+    let chain: Record<string, unknown> | null = null;
+    try {
+      const { persistChatTurn } = await import("@/lib/chain/persist");
+      const persisted = await persistChatTurn({
+        userId: auth.user.uid,
+        userText: userPrompt,
+        assistantText: reply,
+        conversationId:
+          typeof body.chatId === "string" ? body.chatId : undefined,
+        traceId,
+        model: usedModel,
+        provider,
+      });
+      if (persisted.ok) {
+        chain = {
+          content: "PRIVATE",
+          ref: persisted.record.ref,
+          commitment: persisted.record.commitment,
+          anchor: persisted.record.anchor,
+          centraldb: persisted.centraldb,
+          explorerPath: persisted.explorerPath,
+          chatscanMode: persisted.chatscanMode,
+        };
+      } else if (persisted.error !== "chain_persist_disabled") {
+        chain = { content: "PRIVATE", error: persisted.error };
+      }
+    } catch (err) {
+      logEvent("warn", "chat.chain_persist_skipped", {
+        traceId,
+        error: err instanceof Error ? err.message : "unknown",
+      });
+    }
+
     return respond(
       NextResponse.json(
         {
@@ -251,11 +285,13 @@ export async function POST(req: Request) {
             modelRuntime: "ElloFive",
             auth: "IDHook",
             marketplace: env.flags.marketplace,
+            chain: env.flags.chainPersist,
           },
           temperature,
           tools: toolResults,
           sources,
           artifacts,
+          chain,
           traceId,
           marketplace: {
             used: toolResults.some((t) => t.ok),

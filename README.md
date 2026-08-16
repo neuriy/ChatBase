@@ -45,9 +45,17 @@ User → IDHook (auth) → Neuriy Chat UI → tools → ElloFive (Ello5) → rep
 | **ElloFive (Ello5)** | Neuriy’s AI model (`ELLOFIVE_URL`, bridge on `:3999`) |
 | **IDHook** | Auth gate |
 | **Neuriy-Marketplace** | Apps / tools catalog |
+| **Central DB (CHub)** | Hash database — digests only ([Centraldb/chub](https://github.com/Centraldb/chub)) |
+| **CDCI** | X11 blockchain for chat commitments ([Centraldb/CDCI](https://github.com/Centraldb/CDCI)) |
+| **ChatScan pattern** | Explorer: `{HASH}/{ID}`, content never viewable ([chatscan](https://github.com/crypterchat/chatscan)) |
 | **FRC7 patterns** | Flags, orchestration conventions |
 
-See [docs/NEURIY_ELLOFIVE.md](docs/NEURIY_ELLOFIVE.md) · [Frontend-cms + IDHook](docs/FRONTEND_CMS.md) · [Ello5 continuous learning](docs/ELLO5_CONTINUOUS_LEARNING.md).
+See [docs/NEURIY_ELLOFIVE.md](docs/NEURIY_ELLOFIVE.md) · [Frontend-cms + IDHook](docs/FRONTEND_CMS.md) · [Ello5 continuous learning](docs/ELLO5_CONTINUOUS_LEARNING.md) · [CDCI / ChatScan chain](docs/CDCI_CHATSCAN.md).
+
+```text
+User → IDHook → Neuriy Chat → ElloFive → seal turn → CDCI commit + Central DB hash
+                                                      (public: metadata only)
+```
 
 ## Quick start
 
