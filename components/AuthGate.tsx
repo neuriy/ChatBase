@@ -187,7 +187,8 @@ function LoginScreen({ onDevEnter }: { onDevEnter?: () => void }) {
         </div>
 
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Log in om toegang te krijgen tot AI Chat en de Neuriy Marketplace.
+          Sign in with Neuriy IDHook (nID) to use Neuriy AI / ElloFive. Unauthenticated
+          visitors cannot call the chat API.
         </p>
 
         {error && (

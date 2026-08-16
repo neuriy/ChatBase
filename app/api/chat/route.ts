@@ -12,20 +12,26 @@ import {
   runLocalAgent,
 } from "@/lib/ellofive/local-agent";
 import { env } from "@/lib/config/env";
+import { withCors } from "@/lib/http/cors";
 
 /**
  * Neuriy orchestration (ElloFive / Ello5):
  *   Auth (IDHook) → tools (Marketplace / HTML / SVG / live) → ElloFive model → reply
  * ElloFive is always Neuriy’s language model. Tools feed context + artifacts.
+ * Requires IDHook Firebase session cookie or Authorization: Bearer <idToken>.
  */
 export async function POST(req: Request) {
   const traceId = getOrCreateTraceId(req.headers);
+  const respond = (res: NextResponse) => withCors(req, res) as NextResponse;
+
   const auth = await requireUser(req);
   if ("error" in auth) {
-    return new NextResponse(auth.error.body, {
-      status: auth.error.status,
-      headers: { "x-trace-id": traceId, "content-type": "application/json" },
-    });
+    return respond(
+      new NextResponse(auth.error.body, {
+        status: auth.error.status,
+        headers: { "x-trace-id": traceId, "content-type": "application/json" },
+      })
+    );
   }
 
   try {
@@ -38,18 +44,22 @@ export async function POST(req: Request) {
     } = body;
 
     if (cancel) {
-      return NextResponse.json(
-        { ok: true, cancelled: true },
-        { headers: { "x-trace-id": traceId } }
+      return respond(
+        NextResponse.json(
+          { ok: true, cancelled: true },
+          { headers: { "x-trace-id": traceId } }
+        )
       );
     }
 
     const lastMessage = messages[messages.length - 1];
     const userPrompt = String(lastMessage?.content || "");
     if (!userPrompt.trim()) {
-      return NextResponse.json(
-        { error: "Message content cannot be empty", code: "bad_request" },
-        { status: 400, headers: { "x-trace-id": traceId } }
+      return respond(
+        NextResponse.json(
+          { error: "Message content cannot be empty", code: "bad_request" },
+          { status: 400, headers: { "x-trace-id": traceId } }
+        )
       );
     }
 
@@ -227,40 +237,44 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json(
-      {
-        id: `resp-${Date.now()}`,
-        reply,
-        model: usedModel,
-        provider,
-        phase,
-        intent,
-        engine: {
-          product: "Neuriy",
-          modelRuntime: "ElloFive",
-          auth: "IDHook",
-          marketplace: env.flags.marketplace,
+    return respond(
+      NextResponse.json(
+        {
+          id: `resp-${Date.now()}`,
+          reply,
+          model: usedModel,
+          provider,
+          phase,
+          intent,
+          engine: {
+            product: "Neuriy",
+            modelRuntime: "ElloFive",
+            auth: "IDHook",
+            marketplace: env.flags.marketplace,
+          },
+          temperature,
+          tools: toolResults,
+          sources,
+          artifacts,
+          traceId,
+          marketplace: {
+            used: toolResults.some((t) => t.ok),
+            unavailable: marketplaceUnavailable,
+            aiToolsEnabled: env.flags.marketplaceAiTools,
+          },
+          timestamp: new Date().toISOString(),
         },
-        temperature,
-        tools: toolResults,
-        sources,
-        artifacts,
-        traceId,
-        marketplace: {
-          used: toolResults.some((t) => t.ok),
-          unavailable: marketplaceUnavailable,
-          aiToolsEnabled: env.flags.marketplaceAiTools,
-        },
-        timestamp: new Date().toISOString(),
-      },
-      { status: 200, headers: { "x-trace-id": traceId } }
+        { status: 200, headers: { "x-trace-id": traceId } }
+      )
     );
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "Internal Server Error";
-    return NextResponse.json(
-      { error: message, code: "internal_error" },
-      { status: 500, headers: { "x-trace-id": traceId } }
+    return respond(
+      NextResponse.json(
+        { error: message, code: "internal_error" },
+        { status: 500, headers: { "x-trace-id": traceId } }
+      )
     );
   }
 }

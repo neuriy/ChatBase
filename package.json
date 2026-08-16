@@ -12,7 +12,8 @@
     "ellofive": "node services/ellofive-bridge/server.mjs",
     "ui:smoke": "node scripts/ui-smoke.mjs",
     "demo:capture": "node scripts/capture-demo.mjs",
-    "voice:smoke": "node scripts/voice-face-smoke.mjs"
+    "voice:smoke": "node scripts/voice-face-smoke.mjs",
+    "auth:cors:smoke": "node scripts/auth-cors-smoke.mjs"
   },
   "dependencies": {
     "@neuriy/auth": "file:vendor/neuriy-auth",

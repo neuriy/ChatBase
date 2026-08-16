@@ -16,17 +16,17 @@ export function ensureNeuriyAuth() {
       "AIzaSyB-wfqzVbPcT5Bf1JvJNGKA3j8K6BPyMhw",
     authDomain:
       process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ||
-      "robbieart-com.firebaseapp.com",
+      "neuriyart-com.firebaseapp.com",
     projectId:
-      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "robbieart-com",
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "neuriyart-com",
     storageBucket:
       process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
-      "robbieart-com.firebasestorage.app",
+      "neuriyart-com.firebasestorage.app",
     messagingSenderId:
       process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "762094443577",
     appId:
       process.env.NEXT_PUBLIC_FIREBASE_APP_ID ||
-      "1:762094443577:web:bb725c4d3c8b5c943c41e8",
+      "1:762094443577:web:b1c16194dfe8280a3c41e8",
     redirectUrl:
       typeof window !== "undefined" ? window.location.origin : undefined,
   });

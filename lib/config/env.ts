@@ -45,22 +45,22 @@ export const env = {
   firebaseProjectId:
     process.env.FIREBASE_PROJECT_ID ||
     process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
-    "robbieart-com",
+    "neuriyart-com",
   firebaseApiKey:
     process.env.NEXT_PUBLIC_FIREBASE_API_KEY ||
     process.env.FIREBASE_API_KEY ||
     "",
   firebaseAuthDomain:
     process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ||
-    "robbieart-com.firebaseapp.com",
+    "neuriyart-com.firebaseapp.com",
   firebaseStorageBucket:
     process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
-    "robbieart-com.firebasestorage.app",
+    "neuriyart-com.firebasestorage.app",
   firebaseMessagingSenderId:
     process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "762094443577",
   firebaseAppId:
     process.env.NEXT_PUBLIC_FIREBASE_APP_ID ||
-    "1:762094443577:web:bb725c4d3c8b5c943c41e8",
+    "1:762094443577:web:b1c16194dfe8280a3c41e8",
 
   nidLoginUrl: process.env.NEURIY_NID_URL || "https://id.neuriy.com",
 

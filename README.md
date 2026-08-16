@@ -36,7 +36,7 @@ User → IDHook (auth) → Neuriy Chat UI → tools → ElloFive (Ello5) → rep
 | **Neuriy-Marketplace** | Apps / tools catalog |
 | **FRC7 patterns** | Flags, orchestration conventions |
 
-See [docs/NEURIY_ELLOFIVE.md](docs/NEURIY_ELLOFIVE.md).
+See [docs/NEURIY_ELLOFIVE.md](docs/NEURIY_ELLOFIVE.md) · [Frontend-cms + IDHook](docs/FRONTEND_CMS.md).
 
 ## Quick start
 
