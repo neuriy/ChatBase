@@ -49,6 +49,41 @@ export async function verifyIdToken(idToken: string): Promise<AuthUser> {
 export async function requireUser(
   req: Request
 ): Promise<{ user: AuthUser; token: string } | { error: Response }> {
+  // Local/dev bypass for automated testing only — never enabled in production.
+  if (
+    process.env.DEV_AUTH_BYPASS === "1" &&
+    process.env.NODE_ENV !== "production"
+  ) {
+    const authHeader = req.headers.get("authorization") || "";
+    if (authHeader.startsWith("Bearer dev:")) {
+      const uid = authHeader.slice("Bearer dev:".length).trim() || "dev-user";
+      return {
+        user: {
+          uid,
+          email: `${uid}@dev.local`,
+          emailVerified: true,
+          role: "user",
+        },
+        token: authHeader.slice(7),
+      };
+    }
+    // Cookie-less browser tests: allow session cookie neuriy_session=dev:<uid>
+    const cookieStore = await cookies();
+    const cookieToken = cookieStore.get(SESSION_COOKIE)?.value || "";
+    if (cookieToken.startsWith("dev:")) {
+      const uid = cookieToken.slice(4) || "dev-user";
+      return {
+        user: {
+          uid,
+          email: `${uid}@dev.local`,
+          emailVerified: true,
+          role: "user",
+        },
+        token: cookieToken,
+      };
+    }
+  }
+
   const authHeader = req.headers.get("authorization") || "";
   const bearer = authHeader.startsWith("Bearer ")
     ? authHeader.slice(7).trim()

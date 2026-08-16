@@ -41,3 +41,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+artifacts/
+.env.local
+
+# vendor deps
+**/node_modules/
+
+# temp auth files
+components/AuthGate.backup.tsx
+components/AuthGate.tmp.tsx
