@@ -11,7 +11,8 @@ kickstarter/
 │   ├── STORY.md                   ← full Kickstarter story (paste into Story)
 │   ├── RISKS.md                   ← Risks and challenges
 │   ├── USE_OF_FUNDS.md            ← budget breakdown
-│   └── INVESTOR_ONE_PAGER.md      ← short investor summary
+│   ├── INVESTOR_ONE_PAGER.md      ← short investor summary (EN)
+│   └── INVESTOR_NL.md             ← investeerderstekst (NL)
 ├── 02-video/
 │   ├── SCRIPT.md                  ← narration script for the video
 │   ├── neuriy-kickstarter-demo.mp4
@@ -25,8 +26,9 @@ kickstarter/
 │   └── 06-voice-ai-face.png
 ├── 04-rewards/
 │   └── REWARDS.md                 ← pledge tiers
-└── 05-upload-checklist/
-    └── CHECKLIST.md               ← step-by-step Kickstarter upload
+├── 05-upload-checklist/
+│   └── CHECKLIST.md               ← step-by-step Kickstarter upload
+└── TEST_RESULTS.md                ← pre-pack smoke + vitest results
 ```
 
 ## Verified before packaging

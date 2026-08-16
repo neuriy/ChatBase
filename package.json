@@ -16,7 +16,8 @@
     "auth:cors:smoke": "node scripts/auth-cors-smoke.mjs",
     "pages:smoke": "node scripts/pages-smoke.mjs",
     "ello5:learn:once": "python3 services/ello5-learn/worker.py --once",
-    "ello5:learn": "python3 services/ello5-learn/worker.py"
+    "ello5:learn": "python3 services/ello5-learn/worker.py",
+    "kickstarter:capture": "node scripts/capture-kickstarter.mjs"
   },
   "dependencies": {
     "@neuriy/auth": "file:vendor/neuriy-auth",
