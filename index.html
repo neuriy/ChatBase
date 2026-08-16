@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neuriy — Own your assistant. Powered by ElloFive.</title>
+  <meta name="description" content="Neuriy is an ownable AI chat product powered by ElloFive (Ello5), with IDHook login, Marketplace apps, voice + AI face, and continuous learning." />
+  <meta property="og:title" content="Neuriy — Kickstarter" />
+  <meta property="og:description" content="Your own assistant. Powered by ElloFive. Back the campaign." />
+  <meta property="og:image" content="media/02-chat-ello5.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-nav">
+    <a class="nav-brand" href="#top">Neuriy</a>
+    <nav>
+      <a href="#product">Product</a>
+      <a href="#video">Demo</a>
+      <a href="#rewards">Rewards</a>
+      <a class="nav-cta" href="#back">Back the project</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="Neuriy Kickstarter hero">
+      <div class="hero-media" aria-hidden="true">
+        <video autoplay muted loop playsinline poster="media/02-chat-ello5.png">
+          <source src="media/neuriy-kickstarter-demo.webm" type="video/webm" />
+          <source src="media/neuriy-kickstarter-demo.mp4" type="video/mp4" />
+        </video>
+        <div class="hero-veil"></div>
+      </div>
+      <div class="hero-copy">
+        <p class="brand-mark">Neuriy</p>
+        <h1>Own your assistant.</h1>
+        <p class="lede">Powered by ElloFive — chat, Marketplace, voice, and continuous learning on infrastructure you control.</p>
+        <div class="cta-row" id="back">
+          <a class="btn primary" href="https://www.kickstarter.com/" rel="noopener">Back on Kickstarter</a>
+          <a class="btn ghost" href="#video">Watch the demo</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section why" id="product">
+      <h2>Not a rented chat window</h2>
+      <p class="section-lede">Neuriy is the product. ElloFive is the model. IDHook gates access. Marketplace tools plug in. Ello5 can keep learning overnight.</p>
+      <ul class="feature-list">
+        <li>
+          <strong>IDHook login first</strong>
+          <span>AI stays behind auth — no anonymous abuse by default.</span>
+        </li>
+        <li>
+          <strong>Marketplace as pages</strong>
+          <span>Apps and tools live inside the chat product, not in popups.</span>
+        </li>
+        <li>
+          <strong>Ello5 learns 24/7</strong>
+          <span>Hugging Face datasets + chat feedback on DigitalOcean-ready workers.</span>
+        </li>
+        <li>
+          <strong>Voice + AI face</strong>
+          <span>Speak or type — ElloFive answers in the product surface people already know.</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section gallery" aria-label="Product screenshots">
+      <h2>Working product, not slides</h2>
+      <p class="section-lede">Screens from the live Neuriy ChatBase demo — home, Ello5 chat, learning, Marketplace, settings, and voice.</p>
+      <div class="shot-rail">
+        <figure>
+          <img src="media/01-home.png" alt="Neuriy home" width="1200" height="750" loading="lazy" />
+          <figcaption>Home</figcaption>
+        </figure>
+        <figure>
+          <img src="media/02-chat-ello5.png" alt="Ello5 chat" width="1200" height="750" loading="lazy" />
+          <figcaption>Ello5 chat</figcaption>
+        </figure>
+        <figure>
+          <img src="media/03-continuous-learning.png" alt="Continuous learning" width="1200" height="750" loading="lazy" />
+          <figcaption>Continuous learning</figcaption>
+        </figure>
+        <figure>
+          <img src="media/04-marketplace.png" alt="Marketplace" width="1200" height="750" loading="lazy" />
+          <figcaption>Marketplace</figcaption>
+        </figure>
+        <figure>
+          <img src="media/05-settings.png" alt="Settings" width="1200" height="750" loading="lazy" />
+          <figcaption>Settings</figcaption>
+        </figure>
+        <figure>
+          <img src="media/06-voice-ai-face.png" alt="Voice and AI face" width="1200" height="750" loading="lazy" />
+          <figcaption>Voice + AI face</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section video-block" id="video">
+      <h2>Demo walkthrough</h2>
+      <p class="section-lede">~19 seconds through Neuriy ChatBase — silent screen capture. Voiceover script is in the pitch pack.</p>
+      <div class="video-frame">
+        <video controls playsinline poster="media/04-marketplace.png">
+          <source src="media/neuriy-kickstarter-demo.mp4" type="video/mp4" />
+          <source src="media/neuriy-kickstarter-demo.webm" type="video/webm" />
+        </video>
+      </div>
+    </section>
+
+    <section class="section rewards" id="rewards">
+      <h2>Pledge tiers</h2>
+      <p class="section-lede">Draft rewards for early backers — adjust currency and goal on Kickstarter.</p>
+      <div class="tier-list" role="list">
+        <article role="listitem"><h3>Supporter</h3><p class="price">€15</p><p>Name on the backers wall + thank-you.</p></article>
+        <article role="listitem"><h3>Early Access</h3><p class="price">€49</p><p>Beta invite to Neuriy Chat + demo pack.</p></article>
+        <article role="listitem"><h3>Builder</h3><p class="price">€99</p><p>Publisher guide + group onboarding call.</p></article>
+        <article role="listitem"><h3>Studio</h3><p class="price">€249</p><p>Feature vote + branded system prompt pack.</p></article>
+        <article role="listitem"><h3>Team Seat (5)</h3><p class="price">€599</p><p>Five seats + org Marketplace checklist.</p></article>
+        <article role="listitem"><h3>Sponsor</h3><p class="price">€1,500</p><p>Logo on updates + private roadmap session.</p></article>
+      </div>
+    </section>
+
+    <section class="section pack">
+      <h2>Investor pack</h2>
+      <p class="section-lede">Full Kickstarter copy and docs — paste into Story, Risks, and rewards.</p>
+      <ul class="pack-links">
+        <li><a href="pitch/STORY.md">Campaign story</a></li>
+        <li><a href="pitch/INVESTOR_ONE_PAGER.md">Investor one-pager (EN)</a></li>
+        <li><a href="pitch/INVESTOR_NL.md">Investeerderstekst (NL)</a></li>
+        <li><a href="pitch/USE_OF_FUNDS.md">Use of funds</a></li>
+        <li><a href="pitch/RISKS.md">Risks</a></li>
+        <li><a href="pitch/REWARDS.md">Rewards detail</a></li>
+        <li><a href="pitch/TEST_RESULTS.md">Test results</a></li>
+        <li><a href="media/neuriy-kickstarter-demo.mp4">Download demo MP4</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <p><strong>Neuriy</strong> · powered by <strong>ElloFive</strong></p>
+    <p><a href="https://github.com/neuriy/ChatBase">github.com/neuriy/ChatBase</a> · <a href="https://chat.neuriy.com">chat.neuriy.com</a></p>
+  </footer>
+
+  <script>
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduce) {
+      document.documentElement.classList.add("motion-ok");
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) if (e.isIntersecting) e.target.classList.add("in");
+      }, { threshold: 0.12 });
+      document.querySelectorAll(".section, .shot-rail figure").forEach((el) => io.observe(el));
+    } else {
+      document.querySelectorAll(".section, .shot-rail figure").forEach((el) => el.classList.add("in"));
+    }
+  </script>
+</body>
+</html>
